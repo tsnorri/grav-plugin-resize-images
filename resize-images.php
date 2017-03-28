@@ -83,11 +83,13 @@ class ResizeImagesPlugin extends Plugin
      * @param  float $width      - Target width
      * @param  float $height     - Target height
      * @param  int [$quality=95] - Compression quality for target image
+	 * @param  bool $should_crop - Whether the image should be cropped to the specified size
      * @return bool              - Returns true on success, otherwise false
      */
-    protected function resizeImage($source, $target, $width, $height, $quality = 95)
+    protected function resizeImage($source, $target, $width, $height, $quality = 95, $should_crop)
     {
         $adapter = $this->getImageAdapter($source);
+        $adapter->setShouldCrop($should_crop);
         $adapter->resize($width, $height);
         $adapter->setQuality($quality);
 
@@ -139,9 +141,10 @@ class ResizeImagesPlugin extends Plugin
                 $dest_path = "{$info['dirname']}/{$info['filename']}@{$count}x.{$info['extension']}";
                 $width = $size['width'];
                 $quality = $size['quality'];
-                $height = ($width / $medium->width) * $medium->height;
+                $should_crop = $size['should_crop'];
+                $height = ($should_crop ? $width : (($width / $medium->width) * $medium->height));
 
-                $this->resizeImage($source_path, $dest_path, $width, $height, $quality, $medium->width, $medium->height);
+                $this->resizeImage($source_path, $dest_path, $width, $height, $quality, $should_crop, $medium->width, $medium->height);
             }
 
             $remove_original = $this->config->get('plugins.resize-images.remove_original');

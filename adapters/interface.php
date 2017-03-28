@@ -11,5 +11,7 @@ interface ResizeAdapterInterface
 
     public function setQuality($quality);
 
+	public function setShouldCrop($should_crop);
+
     public function save($filename);
 }

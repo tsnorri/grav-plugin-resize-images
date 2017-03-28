@@ -61,3 +61,13 @@ form:
           min: 0
           max: 100
           default: 82
+        .should_crop:
+          type: toggle
+          label: Crop image to the specified size
+          highlight: 0
+          default: 0
+          options:
+            1: Enabled
+            0: Disabled
+          validate:
+            type: bool

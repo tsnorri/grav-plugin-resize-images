@@ -17,6 +17,8 @@ class GDAdapter implements ResizeAdapterInterface
 
     private $quality;
 
+    private $should_crop;
+
     private $original_width;
 
     private $original_height;
@@ -64,6 +66,8 @@ class GDAdapter implements ResizeAdapterInterface
     {
         $this->target = imagecreatetruecolor($width, $height);
         $format = $this->getFormat();
+        $orig_width = $this->original_width;
+        $orig_height = $this->original_height;
 
         if ($format == 'PNG') {
             $transparent = imagecolorallocatealpha($this->target, 255, 255, 255, 127);
@@ -73,7 +77,16 @@ class GDAdapter implements ResizeAdapterInterface
             imagefilledrectangle($this->target, 0, 0, $width, $height, $transparent);
         }
 
-        imagecopyresampled($this->target, $this->image, 0, 0, 0, 0, $width, $height, $this->original_width, $this->original_height);
+        if ($this->should_crop)
+        {
+            $min_size = min($orig_width, $orig_height);
+            
+            imagecopyresampled($this->target, $this->image, 0, 0, ($orig_width - $min_size) / 2.0, ($orig_height - $min_size) / 2.0, $width, $height, $min_size, $min_size);
+        }
+        else
+        {
+            imagecopyresampled($this->target, $this->image, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);
+        }
 
         return $this;
     }
@@ -87,6 +100,19 @@ class GDAdapter implements ResizeAdapterInterface
     {
         $this->quality = $quality;
 
+        return $this;
+    }
+    
+    
+    /**
+     * Set whether the target image should be cropped
+     * @param  bool $should_crop
+     * @return GDAdapter - Returns $this
+     */
+    public function setShouldCrop($should_crop)
+    {
+        $this->should_crop = $should_crop;
+        
         return $this;
     }
 

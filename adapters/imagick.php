@@ -13,6 +13,8 @@ class ImagickAdapter implements ResizeAdapterInterface
 
     private $format;
 
+    private $should_crop;
+
     /**
      * Initiates a new ImagickAdapter instance
      * @param  string $source - Source image path
@@ -56,6 +58,21 @@ class ImagickAdapter implements ResizeAdapterInterface
     {
         $this->image->setImageCompressionQuality($quality);
 
+        return $this;
+    }
+
+    /**
+     * Set whether the target image should be cropped
+     * @param  bool $should_crop
+     * @return ImagickAdapter - Returns $this
+     */
+    public function setShouldCrop($should_crop)
+    {
+        $width = $this->image->getImageWidth();
+        $height = $this->image->getImageHeight();
+        $min_size = min($width, $height);
+        $this->image->cropImage($min_size, $min_size, ($width - $min_size) / 2.0, ($height - $min_size) / 2.0);
+        
         return $this;
     }
 
