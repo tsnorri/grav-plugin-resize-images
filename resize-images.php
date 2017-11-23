@@ -138,7 +138,8 @@ class ResizeImagesPlugin extends Plugin
                 }
 
                 $count++;
-                $dest_path = "{$info['dirname']}/{$info['filename']}@{$count}x.{$info['extension']}";
+                $dpr = $size['device_pixel_ratio'];
+                $dest_path = sprintf("%s/%s.%sx.%s", $info['dirname'], $info['filename'], $dpr, $info['extension']);
                 $width = $size['width'];
                 $quality = $size['quality'];
                 $should_crop = $size['should_crop'];
@@ -150,15 +151,12 @@ class ResizeImagesPlugin extends Plugin
             $remove_original = $this->config->get('plugins.resize-images.remove_original');
 
             if ($count > 0) {
-                $original_index = $count + 1;
-
                 if ($remove_original) {
                     unlink($source_path);
                 } else {
-                    rename($source_path, "{$info['dirname']}/{$info['filename']}@{$original_index}x.{$info['extension']}");
+                    $dest_path = sprintf("%s/%s.original.%s", $info['dirname'], $info['filename'], $info['extension']);
+                    rename($source_path, $dest_path);
                 }
-
-                rename("{$info['dirname']}/{$info['filename']}@1x.{$info['extension']}", $source_path);
             }
 
             $message = "Resized $filename $count times";

@@ -54,6 +54,12 @@ form:
           label: Width
           placeholder: 1280
           min: 1
+        .device_pixel_ratio:
+          type: text
+          label: Device pixel ratio
+          placeholder: 1
+          validate:
+            pattern: ^\d+(\.\d+)?$
         .quality:
           type: number
           label: JPEG quality
